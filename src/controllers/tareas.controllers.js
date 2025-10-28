@@ -15,8 +15,11 @@ export const crearTarea = async (req, res) => {
       tarea: tareaNueva
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: "Ocurrió un error al crear la tarea" });
+    console.error("Error al crear tarea:", error);
+    res.status(500).json({ 
+      mensaje: "Ocurrió un error al crear la tarea",
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 

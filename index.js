@@ -6,6 +6,11 @@ import dotenv from 'dotenv';
 // Cargar variables de entorno
 dotenv.config();
 
+// Conectar a la base de datos primero
+await connectDB().catch(err => {
+  console.error('✗ Error al conectar con MongoDB:', err.message);
+});
+
 // Inicializar servidor
 const server = new Server();
 
@@ -14,9 +19,4 @@ server.app.use('/api', router)
 
 // Iniciar el servidor
 server.listen()
-
-// Conectar a la base de datos (después de que el servidor esté iniciado)
-connectDB().catch(err => {
-  console.error('✗ Error al conectar con MongoDB:', err.message);
-});
 
