@@ -1,0 +1,29 @@
+{
+  "name": "lista-tareas-backend",
+  "version": "1.0.0",
+  "description": "Backend del proyecto lista de tareas con MongoDB",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --env-file .env --watch index.js"
+  },
+  "keywords": [
+    "rutas",
+    "controlador",
+    "BD mongoDB",
+    "middlewares",
+    "tareas",
+    "CRUD"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-validator": "^7.3.0",
+    "mongoose": "^8.19.1",
+    "morgan": "^1.10.1"
+  }
+}
