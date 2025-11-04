@@ -15,7 +15,42 @@ export default class Server {
   }
 
   middlewares() {
-    this.app.use(cors()); // permite conexiones remotas
+    // Configurar CORS para permitir requests desde Netlify y localhost
+    const corsOptions = {
+      origin: function (origin, callback) {
+        // Permitir requests sin origin (como Postman, móviles, etc.)
+        if (!origin) return callback(null, true);
+        
+        // Lista de orígenes permitidos
+        const allowedOrigins = [
+          'http://localhost:5173', // Vite dev server
+          'http://localhost:3000', // Local frontend
+          'http://localhost:5174',
+          /\.netlify\.app$/, // Cualquier dominio de Netlify
+          /\.netlify\.com$/, // Dominios de Netlify
+        ];
+        
+        // Verificar si el origen está permitido
+        const isAllowed = allowedOrigins.some(allowed => {
+          if (allowed instanceof RegExp) {
+            return allowed.test(origin);
+          }
+          return allowed === origin;
+        });
+        
+        if (isAllowed || process.env.NODE_ENV !== 'production') {
+          callback(null, true);
+        } else {
+          callback(null, true); // Permitir todos en producción por ahora
+          // Si quieres ser más restrictivo, usa: callback(new Error('No permitido por CORS'));
+        }
+      },
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    };
+    
+    this.app.use(cors(corsOptions)); // permite conexiones remotas
     this.app.use(express.json()); // permite interpretar los datos que lleguen en la solicitud en formato json
     this.app.use(morgan("dev")); // nos ofrece datos extras en la terminal
     // configurar un archivo estático
