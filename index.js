@@ -10,9 +10,14 @@ import { readFileSync } from 'fs';
 dotenv.config();
 
 // Conectar a la base de datos primero
-await connectDB().catch(err => {
+try {
+  await connectDB();
+  console.log('✅ MongoDB conectado correctamente');
+} catch (err) {
   console.error('✗ Error al conectar con MongoDB:', err.message);
-});
+  console.error('⚠️  El servidor continuará pero las operaciones de BD fallarán');
+  // No detenemos el servidor, pero las operaciones fallarán
+}
 
 // Inicializar servidor
 const server = new Server();
