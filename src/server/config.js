@@ -16,10 +16,13 @@ export default class Server {
 
   middlewares() {
     // Configurar CORS para permitir requests desde Netlify y localhost
+    // En producción, permitir todos los orígenes para evitar problemas
     const corsOptions = {
       origin: function (origin, callback) {
         // Permitir requests sin origin (como Postman, móviles, etc.)
-        if (!origin) return callback(null, true);
+        if (!origin) {
+          return callback(null, true);
+        }
         
         // Lista de orígenes permitidos
         const allowedOrigins = [
@@ -38,19 +41,19 @@ export default class Server {
           return allowed === origin;
         });
         
-        if (isAllowed || process.env.NODE_ENV !== 'production') {
-          callback(null, true);
-        } else {
-          callback(null, true); // Permitir todos en producción por ahora
-          // Si quieres ser más restrictivo, usa: callback(new Error('No permitido por CORS'));
-        }
+        // Permitir siempre en producción para evitar problemas de CORS
+        callback(null, true);
       },
       credentials: true,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+      exposedHeaders: ['Content-Type'],
     };
     
     this.app.use(cors(corsOptions)); // permite conexiones remotas
+    
+    // Manejar preflight requests
+    this.app.options('*', cors(corsOptions));
     this.app.use(express.json()); // permite interpretar los datos que lleguen en la solicitud en formato json
     this.app.use(morgan("dev")); // nos ofrece datos extras en la terminal
     // configurar un archivo estático
