@@ -45,6 +45,17 @@ await initializeDB();
 export default async function handler(req, res) {
   // Log de la request para debugging
   console.log(`📥 ${req.method} ${req.url}`);
+  console.log(`🌐 Origin: ${req.headers.origin || 'none'}`);
+  
+  // Asegurar que CORS se aplique correctamente
+  // Manejar preflight OPTIONS request manualmente si es necesario
+  if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    return res.status(200).end();
+  }
   
   // Manejar la request con Express
   return server.app(req, res);

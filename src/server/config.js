@@ -15,45 +15,22 @@ export default class Server {
   }
 
   middlewares() {
-    // Configurar CORS para permitir requests desde Netlify y localhost
-    // En producción, permitir todos los orígenes para evitar problemas
-    const corsOptions = {
-      origin: function (origin, callback) {
-        // Permitir requests sin origin (como Postman, móviles, etc.)
-        if (!origin) {
-          return callback(null, true);
-        }
-        
-        // Lista de orígenes permitidos
-        const allowedOrigins = [
-          'http://localhost:5173', // Vite dev server
-          'http://localhost:3000', // Local frontend
-          'http://localhost:5174',
-          /\.netlify\.app$/, // Cualquier dominio de Netlify
-          /\.netlify\.com$/, // Dominios de Netlify
-        ];
-        
-        // Verificar si el origen está permitido
-        const isAllowed = allowedOrigins.some(allowed => {
-          if (allowed instanceof RegExp) {
-            return allowed.test(origin);
-          }
-          return allowed === origin;
-        });
-        
-        // Permitir siempre en producción para evitar problemas de CORS
-        callback(null, true);
-      },
-      credentials: true,
+    // Configurar CORS de forma simple: permitir TODOS los orígenes
+    // Esto evita problemas de CORS en producción
+    this.app.use(cors({
+      origin: '*', // Permitir todos los orígenes
+      credentials: false, // Desactivado cuando origin es '*'
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
       allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-      exposedHeaders: ['Content-Type'],
-    };
+    }));
     
-    this.app.use(cors(corsOptions)); // permite conexiones remotas
-    
-    // Manejar preflight requests
-    this.app.options('*', cors(corsOptions));
+    // Manejar preflight requests explícitamente
+    this.app.options('*', (req, res) => {
+      res.header('Access-Control-Allow-Origin', '*');
+      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+      res.sendStatus(200);
+    });
     this.app.use(express.json()); // permite interpretar los datos que lleguen en la solicitud en formato json
     this.app.use(morgan("dev")); // nos ofrece datos extras en la terminal
     // configurar un archivo estático
