@@ -3,6 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
+import "./dbConfig.js";
 
 // 1- Tomar un puerto
 // 2- configurar los middlewares
@@ -15,22 +16,7 @@ export default class Server {
   }
 
   middlewares() {
-    // Configurar CORS de forma simple: permitir TODOS los orígenes
-    // Esto evita problemas de CORS en producción
-    this.app.use(cors({
-      origin: '*', // Permitir todos los orígenes
-      credentials: false, // Desactivado cuando origin es '*'
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    }));
-    
-    // Manejar preflight requests explícitamente
-    this.app.options('*', (req, res) => {
-      res.header('Access-Control-Allow-Origin', '*');
-      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-      res.sendStatus(200);
-    });
+    this.app.use(cors()); // permite conexiones remotas
     this.app.use(express.json()); // permite interpretar los datos que lleguen en la solicitud en formato json
     this.app.use(morgan("dev")); // nos ofrece datos extras en la terminal
     // configurar un archivo estático
@@ -46,4 +32,3 @@ export default class Server {
     );
   }
 }
-
