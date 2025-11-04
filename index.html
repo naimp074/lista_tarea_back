@@ -7,6 +7,23 @@
     <title>lista_tarea_back</title>
   </head>
   <body>
-  <h1>todo bien 👍</h1>
+    <div id="status"></div>
+    <script>
+      // Verificar si el backend está andando
+      async function verificarBackend() {
+        const statusDiv = document.getElementById('status');
+        try {
+          const response = await fetch('/api/tareas/test');
+          if (response.ok) {
+            statusDiv.innerHTML = '<h1 style="text-align: center; padding: 50px; font-family: Arial;">✓ Backend está andando</h1>';
+          } else {
+            statusDiv.innerHTML = '<h1 style="text-align: center; padding: 50px; font-family: Arial; color: red;">✗ Backend no está andando</h1>';
+          }
+        } catch (error) {
+          statusDiv.innerHTML = '<h1 style="text-align: center; padding: 50px; font-family: Arial; color: red;">✗ Backend no está andando</h1>';
+        }
+      }
+      verificarBackend();
+    </script>
   </body>
 </html>
