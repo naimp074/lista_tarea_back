@@ -9,5 +9,21 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Verificar si el backend está andando
+      async function verificarBackend() {
+        try {
+          const response = await fetch('/api/tareas/test');
+          if (response.ok) {
+            document.body.innerHTML = '<h1 style="text-align: center; padding: 50px; font-family: Arial;">✓ Backend está andando</h1>' + document.body.innerHTML;
+          } else {
+            document.body.innerHTML = '<h1 style="text-align: center; padding: 50px; font-family: Arial; color: red;">✗ Backend no está andando</h1>' + document.body.innerHTML;
+          }
+        } catch (error) {
+          document.body.innerHTML = '<h1 style="text-align: center; padding: 50px; font-family: Arial; color: red;">✗ Backend no está andando</h1>' + document.body.innerHTML;
+        }
+      }
+      verificarBackend();
+    </script>
   </body>
 </html>
