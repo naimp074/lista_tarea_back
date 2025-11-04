@@ -32,24 +32,21 @@ async function initializeDB() {
 // Inicializar servidor
 const server = new Server();
 
-// Agregar las rutas
-server.app.use('/api', router);
-
-// Ruta para servir el index.html en la raíz
-const __dirname = dirname(fileURLToPath(import.meta.url));
-server.app.get('/', (req, res) => {
-  try {
-    const htmlPath = join(__dirname, '../index.html');
-    const html = readFileSync(htmlPath, 'utf-8');
-    res.send(html);
-  } catch (error) {
-    res.status(500).send('Error al cargar la página');
-  }
-});
+// Agregar las rutas de la API
+// El router tiene /tareas, y este handler está en /api
+// Entonces: server.app.use('/', router) hace que /tareas esté en /api/tareas ✓
+server.app.use('/', router);
 
 // Inicializar DB al cargar el módulo
 await initializeDB();
 
-// Exportar el handler para Vercel
-export default server.app;
+// Handler para Vercel Serverless Functions
+// Vercel pasa (req, res) directamente a la app de Express
+export default async function handler(req, res) {
+  // Log de la request para debugging
+  console.log(`📥 ${req.method} ${req.url}`);
+  
+  // Manejar la request con Express
+  return server.app(req, res);
+}
 
